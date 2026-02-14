@@ -54,16 +54,80 @@
  */
 export function createThaliDescription(thali) {
   // Your code here
+  if (
+    typeof thali !== "object" ||
+    thali === null ||
+    typeof thali.name !== "string" ||
+    !Array.isArray(thali.items) ||
+    typeof thali.price !== "number" ||
+    typeof thali.isVeg !== "boolean"
+  )
+    return "";
+
+  return `${thali.name.toUpperCase()} (${thali.isVeg ? "Veg" : "Non-Veg"}) - Items: ${thali.items.join(", ")} - Rs.${thali.price.toFixed(2)}`;
 }
 
 export function getThaliStats(thalis) {
   // Your code here
+  if (!Array.isArray(thalis) || thalis.length === 0) return null;
+
+  let totalThalis = thalis.length;
+
+  let vegCount = thalis.filter((thali) => thali.isVeg === true).length;
+
+  let nonVegCount = thalis.filter((thali) => thali.isVeg === false).length;
+
+  let prices = thalis.map((thali) => thali.price);
+  let totalPrice = prices.reduce((sum, price) => sum + price, 0);
+  let avgPrice = (totalPrice / totalThalis).toFixed(2);
+
+  let cheapest = Math.min(...prices);
+
+  let costliest = Math.max(...prices);
+
+  let names = thalis.map((thali) => thali.name);
+
+  return {
+    totalThalis,
+    vegCount,
+    nonVegCount,
+    avgPrice,
+    cheapest,
+    costliest,
+    names,
+  };
 }
 
 export function searchThaliMenu(thalis, query) {
   // Your code here
+  if (!Array.isArray(thalis) || typeof query !== "string") return [];
+
+  query = query.toLowerCase();
+
+  let itemFound = thalis.filter(
+    (thali) =>
+      thali.name.toLowerCase().includes(query) ||
+      thali.items.some((item) => item.toLowerCase().includes(query)),
+  );
+
+  return itemFound;
 }
 
 export function generateThaliReceipt(customerName, thalis) {
   // Your code here
+  if (
+    typeof customerName !== "string" ||
+    !Array.isArray(thalis) ||
+    thalis.length === 0
+  )
+    return "";
+
+  let NAME = customerName.toUpperCase();
+  let lineItems = thalis.map((thali) => `- ${thali.name} x Rs.${thali.price}`).join("\n");
+
+  let total = thalis.reduce((sum, thali) => sum + thali.price, 0);
+
+  let count = thalis.length;
+
+  return `THALI RECEIPT\n---\nCustomer: ${NAME}\n${lineItems}\n---\nTotal: Rs.${total}\nItems: ${count}`;
 }
